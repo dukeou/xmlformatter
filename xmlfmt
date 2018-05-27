@@ -52,7 +52,10 @@ BEGIN {
             }
             space(indent);
             printf "%s", substr(str, RSTART, RLENGTH);
-            ++indent;
+            if(substr(str, RSTART + RLENGTH - 2, 1) != "/")
+            {
+                ++indent;
+            }
         }
         str=substr(str, RSTART + RLENGTH);
     }
