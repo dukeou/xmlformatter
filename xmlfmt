@@ -1,0 +1,65 @@
+#! /usr/bin/awk -f
+function trim(str)
+{
+    gsub(/\r/, "", str);
+    gsub(/^[ \t]+/, "", str);
+    gsub(/[ \t]+$/, "", str);
+    gsub(/[ \t]+/, " ", str);
+    return str;
+}
+function space(num)
+{
+    for(i = 0; i < num * 4; i++)
+    {
+        printf " ";
+    }
+}
+BEGIN {
+    pattern = "<\/?[[:alnum:]_-.:]+( +[[:alpha:]_:][[:alnum:]_-.:]*)* *\/?>";
+    indent = 0;
+    tags = 0;
+}
+{
+    str = $0;
+    while(match(str, pattern))
+    {
+        text = trim(substr(str, 0, RSTART - 1));
+        if(substr(str, RSTART + 1, 1) == "/")
+        {
+            --indent;
+            if(length(text) > 0)
+            {
+                printf "%s%s", text, substr(str, RSTART, RLENGTH);
+            }
+            else
+            {
+                printf "\n";
+                space(indent);
+                printf "%s", substr(str, RSTART, RLENGTH);
+            }
+        }
+        else
+        {
+            ++tags;
+            if(length(text) > 0)
+            {
+                space(indent);
+                printf "%s\n", text;
+            }
+            if(tags > 1)
+            {
+                printf "\n";
+            }
+            space(indent);
+            printf "%s", substr(str, RSTART, RLENGTH);
+            ++indent;
+        }
+        str=substr(str, RSTART + RLENGTH);
+    }
+    str = trim(str);
+    if(length(str) > 0)
+        printf("%s\n", str);
+}
+END{
+    printf "\n";
+}
