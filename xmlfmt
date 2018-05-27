@@ -15,7 +15,7 @@ function space(num)
     }
 }
 BEGIN {
-    pattern = "<\/?[[:alnum:]_-.:]+( +[[:alpha:]_:][[:alnum:]_-.:]*)* *\/?>";
+    pattern = "<\/?[[:alnum:]_-.:]+( +[[:alpha:]_:][[:alnum:]_-.:]*=(('[^']+')|(\"[^\"]+\")))* *\/?>";
     indent = 0;
     tags = 0;
 }
@@ -41,14 +41,14 @@ BEGIN {
         else
         {
             ++tags;
+            if(tags > 1)
+            {
+                printf "\n";
+            }
             if(length(text) > 0)
             {
                 space(indent);
                 printf "%s\n", text;
-            }
-            if(tags > 1)
-            {
-                printf "\n";
             }
             space(indent);
             printf "%s", substr(str, RSTART, RLENGTH);
